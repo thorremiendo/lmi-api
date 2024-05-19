@@ -14,41 +14,29 @@ async function hashPassword(password: string) {
 }
 
 async function main() {
-    await prisma.user.create({
-        data: {
-            username: 'drrmoUser',
-            password: await hashPassword('testpassword'),
-            email: 'drrmo@example.com',
-            role: Role.DRRMO,
-        },
-    });
+    const users = [
+        { username: 'drrmoUser', email: 'drrmo@example.com', role: Role.DRRMO },
+        { username: 'lguUser', email: 'lgu@example.com', role: Role.LGU },
+        { username: 'buUser', email: 'bu@example.com', role: Role.BU },
+        { username: 'communityUser', email: 'community@example.com', role: Role.COMMUNITY },
+    ];
 
-    await prisma.user.create({
-        data: {
-            username: 'lguUser',
-            password: await hashPassword('testpassword'),
-            email: 'lgu@example.com',
-            role: Role.LGU,
-        },
-    });
+    for (const user of users) {
+        const existingUser = await prisma.user.findFirst({
+            where: { username: user.username },
+        });
 
-    await prisma.user.create({
-        data: {
-            username: 'buUser',
-            password: await hashPassword('testpassword'),
-            email: 'bu@example.com',
-            role: Role.BU,
-        },
-    });
-
-    await prisma.user.create({
-        data: {
-            username: 'communityUser',
-            password: await hashPassword('testpassword'),
-            email: 'community@example.com',
-            role: Role.COMMUNITY,
-        },
-    });
+        if (!existingUser) {
+            await prisma.user.create({
+                data: {
+                    username: user.username,
+                    password: await hashPassword('testpassword'),
+                    email: user.email,
+                    role: user.role,
+                },
+            });
+        }
+    }
 
     const data = [
         {
