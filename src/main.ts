@@ -10,7 +10,7 @@ async function bootstrap() {
   const config = new DocumentBuilder()
     .setTitle('LMIS')
     .setDescription('LMIS API Docs')
-    .setVersion('0.1')
+    .setVersion('1.0')
     .addBearerAuth()
     .build();
 

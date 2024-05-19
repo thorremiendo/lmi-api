@@ -4,8 +4,9 @@ import { LandslideReportsService } from './landslide-reports.service';
 import { CreateLandslideReportDto } from './dto/create-landslide-report.dto';
 import { ResponseDto } from 'src/dto/response.dto';
 import { LandslideReport } from '@prisma/client';
+import { ApiTags } from '@nestjs/swagger';
 // import { UpdateLandslideReportDto } from './dto/update-landslide-report.dto';
-
+@ApiTags('Reports')
 @Controller('reports')
 export class LandslideReportsController {
   constructor(private readonly landslideReportsService: LandslideReportsService) { }

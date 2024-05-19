@@ -1,8 +1,9 @@
 /* eslint-disable prettier/prettier */
 import { Controller, Get, Param } from '@nestjs/common';
 import { BarangaysService } from './barangays.service';
+import { ApiTags } from '@nestjs/swagger';
 
-
+@ApiTags('General')
 @Controller('barangays')
 export class BarangaysController {
   constructor(private readonly barangaysService: BarangaysService) { }
