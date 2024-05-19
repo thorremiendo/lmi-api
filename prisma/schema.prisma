@@ -1,0 +1,93 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum LandslideCategory {
+  SoilCoverCollapse
+  RockFall
+}
+
+enum Susceptibility {
+  High
+  Medium
+  Low
+}
+
+enum Role {
+  DRRMO
+  LGU
+  BU
+  COMMUNITY
+}
+
+model Article {
+  id          Int      @id @default(autoincrement())
+  title       String   @unique
+  description String?
+  body        String
+  published   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Municipality {
+  id               Int               @id @default(autoincrement())
+  name             String
+  barangays        Barangay[]
+  landslideReports LandslideReport[]
+}
+
+model Barangay {
+  id               Int               @id @default(autoincrement())
+  name             String
+  municipalityId   Int
+  Municipality     Municipality      @relation(fields: [municipalityId], references: [id])
+  landslideReports LandslideReport[]
+}
+
+model LandslideReport {
+  id                      Int                @id @default(autoincrement())
+  createdAt               DateTime           @default(now())
+  dateOfIncident          DateTime?
+  timeOfIncident          DateTime?
+  dateReported            DateTime?
+  municipalityId          Int?
+  Municipality            Municipality?      @relation(fields: [municipalityId], references: [id])
+  barangayId              Int?
+  Barangay                Barangay?          @relation(fields: [barangayId], references: [id])
+  latitude                String?
+  longitude               String?
+  approvedBy              String?
+  roadNetworks            String?
+  builtUpAreas            String?
+  displaced               Int?
+  injured                 Int?
+  dead                    Int?
+  landslideCategory       LandslideCategory?
+  triggeringMechanism     String?
+  remarks                 String?
+  landslideSusceptibility Susceptibility?
+  floodingSusceptibility  Susceptibility?
+  photo                   String?
+  actionsTaken            String?
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  username  String   @unique
+  password  String
+  email     String   @unique
+  role      Role
+  createdAt DateTime @default(now())
+}
