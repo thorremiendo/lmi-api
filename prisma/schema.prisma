@@ -91,3 +91,45 @@ model User {
   role      Role
   createdAt DateTime @default(now())
 }
+
+model Device {
+  id                    Int          @id @default(autoincrement())
+  device_sn             String       @unique
+  device_name           String
+  SensorData            SensorData[]
+  last_successful_fetch DateTime     @default(now())
+}
+
+model SensorType {
+  id         Int          @id @default(autoincrement())
+  name       String       @unique
+  SensorData SensorData[]
+}
+
+model SensorData {
+  id           Int        @id @default(autoincrement())
+  device       Device     @relation(fields: [deviceId], references: [id])
+  deviceId     Int
+  sensorType   SensorType @relation(fields: [sensorTypeId], references: [id])
+  sensorTypeId Int
+  port_number  Int
+  sensor_sn    String?
+  sensor_name  String?
+  units        String?
+  depth        String?
+  Reading      Reading[]
+}
+
+model Reading {
+  id                Int        @id @default(autoincrement())
+  sensorData        SensorData @relation(fields: [sensorDataId], references: [id])
+  sensorDataId      Int
+  timestamp_utc     Int?
+  datetime          DateTime?
+  tz_offset         Int?
+  value             Float?
+  precision         Int?
+  mrid              Int?
+  error_flag        Boolean?
+  error_description String?
+}

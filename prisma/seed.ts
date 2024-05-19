@@ -291,6 +291,47 @@ async function main() {
             }
         }
     }
+
+    const devices = [
+        { device_sn: 'z6-25616', device_name: 'Baguio City' },
+        { device_sn: 'z6-25617', device_name: 'La Trinidad' },
+        { device_sn: 'z6-25618', device_name: 'Sablan' },
+        { device_sn: 'z6-25619', device_name: 'Itogon' },
+        { device_sn: 'z6-25620', device_name: 'Tuba' },
+        { device_sn: 'z6-25621', device_name: 'Tublay' },
+    ];
+
+    const sensorTypes = [
+        'Air Temperature',
+        'Atmospheric Pressure',
+        'Battery Percent',
+        'Battery Voltage',
+        'Logger Temperature',
+        'Max Precip Rate',
+        'Pore Water EC',
+        'Precipitation',
+        'Raw VWC',
+        'Reference Pressure',
+        'Relative Humidity',
+        'Soil Temperature',
+        'VPD',
+    ];
+
+    for (const device of devices) {
+        await prisma.device.upsert({
+            where: { device_sn: device.device_sn },
+            update: { device_name: device.device_name },
+            create: device,
+        });
+    }
+
+    for (const name of sensorTypes) {
+        await prisma.sensorType.upsert({
+            where: { name },
+            update: {},
+            create: { name },
+        });
+    }
 }
 
 // execute the main function
