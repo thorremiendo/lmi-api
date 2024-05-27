@@ -15,16 +15,36 @@ export class LandslideReportsService {
   }
 
   async findAll(): Promise<LandslideReport[]> {
-    return this.prisma.landslideReport.findMany();
+    return this.prisma.landslideReport.findMany({
+      include: {
+        Municipality: true,
+        Barangay: true,
+      },
+      orderBy: {
+        id: 'asc',
+      },
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} landslideReport`;
+  async findOne(id: number): Promise<LandslideReport | null> {
+    return this.prisma.landslideReport.findUnique({
+      where: { id },
+      include: {
+        Municipality: true,
+        Barangay: true,
+      },
+
+    });
   }
 
-  // update(id: number, updateLandslideReportDto: UpdateLandslideReportDto) {
-  //   return `This action updates a #${id} landslideReport`;
-  // }
+  async updateLandslideReport(id: any, data: Partial<LandslideReport>): Promise<LandslideReport> {
+    return this.prisma.landslideReport.update({
+      where: {
+        id: parseInt(id)
+      },
+      data,
+    });
+  }
 
   remove(id: number) {
     return `This action removes a #${id} landslideReport`;

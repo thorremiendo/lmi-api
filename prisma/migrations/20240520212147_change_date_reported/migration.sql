@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "LandslideReport" ALTER COLUMN "dateReported" SET DEFAULT CURRENT_TIMESTAMP;

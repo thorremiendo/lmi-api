@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Put } from '@nestjs/common';
 import { LandslideReportsService } from './landslide-reports.service';
 import { CreateLandslideReportDto } from './dto/create-landslide-report.dto';
 import { ResponseDto } from 'src/dto/response.dto';
@@ -24,14 +24,15 @@ export class LandslideReportsController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.landslideReportsService.findOne(+id);
+  async findOne(@Param('id') id: string) {
+    const data = await this.landslideReportsService.findOne(+id);
+    return new ResponseDto(true, data, 'Landslide report fetched successfully');
   }
 
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateLandslideReportDto: UpdateLandslideReportDto) {
-  //   return this.landslideReportsService.update(+id, updateLandslideReportDto);
-  // }
+  @Put(':id')
+  updateLandslideReport(@Param('id') id: any, @Body() data: Partial<LandslideReport>) {
+    return this.landslideReportsService.updateLandslideReport(id, data);
+  }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
