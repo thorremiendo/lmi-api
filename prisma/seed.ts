@@ -15,10 +15,13 @@ async function hashPassword(password: string) {
 
 async function main() {
     const users = [
-        { username: 'drrmoUser', email: 'drrmo@example.com', role: Role.DRRMO },
-        { username: 'lguUser', email: 'lgu@example.com', role: Role.LGU },
-        { username: 'buUser', email: 'bu@example.com', role: Role.BU },
-        { username: 'communityUser', email: 'community@example.com', role: Role.COMMUNITY },
+        { username: 'lmis-mayor', email: 'lmis1@test.com', role: Role.LGU, firstName: 'Mayor', lastName: 'Mayor', contactNumber: '09123456789', municipalityId: null, barangayId: null },
+        { username: 'lmis-barangay', email: 'lmis2@test.com', role: Role.LGU, firstName: 'Barangay', lastName: 'Barangay', contactNumber: '09123456789', municipalityId: null, barangayId: null },
+        { username: 'lmis-drrmo', email: 'lmis3@test.com', role: Role.LGA, firstName: 'DRRMO', lastName: 'DRRMO', contactNumber: '09123456789', municipalityId: null, barangayId: null },
+        { username: 'lmis-mgbcar', email: 'lmis4@test.com', role: Role.LGA, firstName: 'MGBCAR', lastName: 'MGBCAR', contactNumber: '09123456789', municipalityId: null, barangayId: null },
+        { username: 'lmis-pagasa', email: 'lmis5@test.com', role: Role.LGA, firstName: 'PAGASA', lastName: 'PAGASA', contactNumber: '09123456789', municipalityId: null, barangayId: null },
+        { username: 'lmis-community', email: 'lmis6@test.com', role: Role.Others, firstName: 'Community', lastName: 'Community', contactNumber: '09123456789', municipalityId: null, barangayId: null },
+        { username: 'lmis-admin', email: 'lmis7@test.com', role: Role.Admin, firstName: 'Admin', lastName: 'Admin', contactNumber: '09123456789', municipalityId: null, barangayId: null },
     ];
 
     for (const user of users) {
@@ -33,6 +36,11 @@ async function main() {
                     password: await hashPassword('testpassword'),
                     email: user.email,
                     role: user.role,
+                    firstName: user.firstName,
+                    lastName: user.lastName,
+                    contactNumber: user.contactNumber,
+                    municipalityId: user.municipalityId,
+                    barangayId: user.barangayId,
                 },
             });
         }
@@ -292,9 +300,27 @@ async function main() {
         }
     }
 
-    await prisma.lastSuccessfulFetch.create({
-        data: { timestamp: new Date('2024-05-01T00:00:00.000Z') },
-    });
+    const devices = ['z6-25616', 'z6-25617', 'z6-25618', 'z6-25619', 'z6-25620', 'z6-25621']
+    const defaultFetchDate = new Date(Date.UTC(2024, 0, 1)) // January 1, 2024 UTC
+
+    for (const device of devices) {
+        // Check if the device already exists
+        const existingDevice = await prisma.device.findFirst({
+            where: {
+                deviceName: device,
+            },
+        })
+
+        // If the device doesn't exist, create a new record
+        if (!existingDevice) {
+            await prisma.device.create({
+                data: {
+                    deviceName: device,
+                    lastFetchDateTime: defaultFetchDate,
+                },
+            })
+        }
+    }
 }
 
 // execute the main function

@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
 import { Inject, Injectable } from '@nestjs/common';
 import { AuthPayloadDto } from './dto/auth.dto';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Role } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 
@@ -13,6 +13,30 @@ export class AuthService {
         private jwtService: JwtService
     ) { }
 
+    async register(body: {
+        username: string;
+        contactNumber: string;
+        password: string;
+        firstName: string;
+        lastName: string;
+        barangay: number;
+        role: Role;
+    }) {
+        const hashedPassword = await bcrypt.hash(body.password, 10);
+
+        return this.prisma.user.create({
+            data: {
+                username: body.username,
+                contactNumber: body.contactNumber,
+                password: hashedPassword,
+                firstName: body.firstName,
+                lastName: body.lastName,
+                barangayId: body.barangay,
+                municipalityId: null,
+                role: body.role
+            },
+        });
+    }
 
     async validateUser({ username, password }: AuthPayloadDto): Promise<any> {
         const findUser = await this.prisma.user.findUnique({

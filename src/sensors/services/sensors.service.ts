@@ -17,22 +17,45 @@ export class SensorsService {
     return this.zentraService.getSensorData(query);
   }
 
-  async getReadings(device_sn: string, readingType: string) {
+  // async getReadings(device_sn: string, readingType: string, from: Date, until: Date) {
+  //   return this.prisma.reading.findMany({
+  //     where: {
+  //       AND: [
+  //         {
+  //           metadata: {
+  //             device_sn: device_sn,
+  //           },
+  //         },
+  //         {
+  //           metadata: {
+  //             readingType: readingType,
+  //           },
+  //         },
+  //       ],
+  //     },
+  //     include: {
+  //       metadata: true,
+  //     },
+  //   });
+  // }
+
+  async getReadings(device_sn: string, reading_type: string, from?: Date, until?: Date) {
+    const whereClause = {
+      metadata: {
+        device_sn: device_sn,
+        readingType: reading_type,
+      }
+    };
+
+    if (from && until) {
+      whereClause['datetime'] = {
+        gte: from,
+        lte: until,
+      };
+    }
+
     return this.prisma.reading.findMany({
-      where: {
-        AND: [
-          {
-            metadata: {
-              device_sn: device_sn,
-            },
-          },
-          {
-            metadata: {
-              readingType: readingType,
-            },
-          },
-        ],
-      },
+      where: whereClause,
       include: {
         metadata: true,
       },
@@ -41,21 +64,14 @@ export class SensorsService {
 
   @Cron(CronExpression.EVERY_10_MINUTES)
   async handleCron() {
-    const devices = ['z6-25616', 'z6-25617', 'z6-25618', 'z6-25619', 'z6-25620', 'z6-25621']
+    const devices = await this.prisma.device.findMany()
 
     for (const device of devices) {
       await new Promise(resolve => setTimeout(resolve, 60000));
 
-      const latestFetch = await this.prisma.lastSuccessfulFetch.findFirst({
-        orderBy: {
-          id: 'desc',
-        },
-      });
-
       const params: SensorDataParamsDto = {
-        device_sn: device,
-        // start_date: new Date(latestFetch.timestamp).toISOString(),
-        start_date: '2024-01-01T00:00:00.000Z',
+        device_sn: device.deviceName,
+        start_date: new Date(device.lastFetchDateTime).toISOString(),
         end_date: new Date().toISOString(),
         start_mrid: 3500,
         end_mrid: 3800,
@@ -68,13 +84,21 @@ export class SensorsService {
 
       try {
         const data = await this.getSensorData(params).toPromise();
-
-        await this.prisma.lastSuccessfulFetch.create({
-          data: { timestamp: new Date() },
-        });
-
+        //Update the lastFetchDateTime for the device
+        if (data) {
+          const nowUtc = new Date().toISOString();
+          await this.prisma.device.update({
+            where: {
+              id: device.id,
+            },
+            data: {
+              lastFetchDateTime: nowUtc
+            },
+          })
+        }
         // Iterate over each sensor type in the data
         for (const readingType in data.data) {
+          console.log("READING TYPE", readingType)
           const sensorData = data.data[readingType][0]
 
           const sensorDataRecord = await this.prisma.metadata.create({
@@ -92,6 +116,7 @@ export class SensorsService {
 
           // Iterate over each reading in the sensor data
           for (const reading of sensorData.readings) {
+            console.log("READING", reading)
             await this.prisma.reading.create({
               data: {
                 metadata: { connect: { id: sensorDataRecord.id } },
@@ -105,12 +130,11 @@ export class SensorsService {
                 error_description: reading.error_description,
               },
             });
-
           }
         }
 
       } catch (error) {
-        console.error(`Error fetching sensor data for device ${device}: ${error}`);
+        console.error(`Error fetching sensor data for device ${device.deviceName}: ${error}`);
       }
     }
   }

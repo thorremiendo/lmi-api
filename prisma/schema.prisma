@@ -14,10 +14,10 @@ datasource db {
 }
 
 enum Role {
-  DRRMO
   LGU
-  BU
-  COMMUNITY
+  LGA
+  Others
+  Admin
 }
 
 model Article {
@@ -35,6 +35,7 @@ model Municipality {
   name             String
   barangays        Barangay[]
   landslideReports LandslideReport[]
+  User             User[]
 }
 
 model Barangay {
@@ -43,6 +44,7 @@ model Barangay {
   municipalityId   Int
   Municipality     Municipality      @relation(fields: [municipalityId], references: [id])
   landslideReports LandslideReport[]
+  User             User[]
 }
 
 model LandslideReport {
@@ -62,12 +64,19 @@ model LandslideReport {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  username  String   @unique
-  password  String
-  email     String   @unique
-  role      Role
-  createdAt DateTime @default(now())
+  id             Int           @id @default(autoincrement())
+  username       String        @unique
+  password       String
+  email          String?       @unique
+  role           Role
+  createdAt      DateTime      @default(now())
+  municipalityId Int?          @default(0) // new field
+  Municipality   Municipality? @relation(fields: [municipalityId], references: [id])
+  barangayId     Int?          @default(0) // new field
+  Barangay       Barangay?     @relation(fields: [barangayId], references: [id])
+  firstName      String        @default("") // new field
+  lastName       String        @default("") // new field
+  contactNumber  String        @default("") // new field
 }
 
 model Metadata {
@@ -88,7 +97,7 @@ model Reading {
   timestamp_utc     Int
   datetime          DateTime
   tz_offset         Int
-  value             Float
+  value             Float?
   precision         Int
   mrid              Int
   error_flag        Boolean
@@ -97,7 +106,8 @@ model Reading {
   metadata          Metadata @relation(fields: [metadataId], references: [id])
 }
 
-model LastSuccessfulFetch {
-  id        Int      @id @default(autoincrement())
-  timestamp DateTime @default(now())
+model Device {
+  id                Int      @id @default(autoincrement())
+  deviceName        String
+  lastFetchDateTime DateTime @default(now())
 }
