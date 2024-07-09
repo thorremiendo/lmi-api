@@ -61,6 +61,7 @@ model LandslideReport {
   remarks        String?
   photo          String?
   status         Int?
+  verifiedBy     String?
 }
 
 model User {
