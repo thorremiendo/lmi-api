@@ -6,9 +6,16 @@ import { BarangaysModule } from './barangays/barangays.module';
 import { LandslideReportsModule } from './landslide-reports/landslide-reports.module';
 import { AuthModule } from './auth/auth.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import { NotificationsModule } from './notifications/notifications.module';
 
 @Module({
-  imports: [SensorsModule, MunicipalitiesModule, BarangaysModule, LandslideReportsModule, AuthModule,
+  imports: [
+    SensorsModule,
+    MunicipalitiesModule,
+    BarangaysModule,
+    LandslideReportsModule,
+    AuthModule,
+    NotificationsModule,
     ScheduleModule.forRoot()
   ],
 })

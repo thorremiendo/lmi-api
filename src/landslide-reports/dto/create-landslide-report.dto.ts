@@ -47,4 +47,14 @@ export class CreateLandslideReportDto {
     @IsOptional()
     @IsString()
     status?: number;
+
+    @ApiProperty({ example: '123.321' })
+    @IsOptional()
+    @IsInt()
+    longitute?: number;
+
+    @ApiProperty({ example: '123.321' })
+    @IsOptional()
+    @IsInt()
+    latitude?: number;
 }   

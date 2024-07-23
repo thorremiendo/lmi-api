@@ -1,4 +1,5 @@
+/* eslint-disable prettier/prettier */
 import { PartialType } from '@nestjs/swagger';
 import { CreateLandslideReportDto } from './create-landslide-report.dto';
 
-export class UpdateLandslideReportDto extends PartialType(CreateLandslideReportDto) {}
+export class UpdateLandslideReportDto extends PartialType(CreateLandslideReportDto) { }

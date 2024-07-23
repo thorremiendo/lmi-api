@@ -9,8 +9,14 @@ export class LandslideReportsService {
   constructor(@Inject('PrismaClient') private prisma: PrismaClient) { }
 
   async create(createLandslideReportDto: CreateLandslideReportDto): Promise<LandslideReport> {
+    const { municipalityId, barangayId, ...rest } = createLandslideReportDto;
+
     return this.prisma.landslideReport.create({
-      data: createLandslideReportDto,
+      data: {
+        ...rest,
+        Municipality: municipalityId ? { connect: { id: municipalityId } } : undefined,
+        Barangay: barangayId ? { connect: { id: barangayId } } : undefined,
+      },
     });
   }
 
@@ -38,11 +44,22 @@ export class LandslideReportsService {
   }
 
   async updateLandslideReport(id: any, data: Partial<LandslideReport>): Promise<LandslideReport> {
+    const { municipalityId, barangayId, ...rest } = data;
+    const updateData: any = {
+      ...rest,
+    };
+
+    if (municipalityId !== undefined) {
+      updateData.Municipality = { connect: { id: municipalityId } };
+    }
+
+    if (barangayId !== undefined) {
+      updateData.Barangay = { connect: { id: barangayId } };
+    }
+
     return this.prisma.landslideReport.update({
-      where: {
-        id: parseInt(id)
-      },
-      data,
+      where: { id: parseInt(id) },
+      data: updateData,
     });
   }
 

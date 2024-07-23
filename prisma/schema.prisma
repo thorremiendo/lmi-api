@@ -48,20 +48,31 @@ model Barangay {
 }
 
 model LandslideReport {
-  id             Int           @id @default(autoincrement())
-  createdAt      DateTime      @default(now())
-  dateOfIncident DateTime?
-  timeOfIncident String?
-  dateReported   DateTime?     @default(now())
-  municipalityId Int?
-  Municipality   Municipality? @relation(fields: [municipalityId], references: [id])
-  barangayId     Int?
-  Barangay       Barangay?     @relation(fields: [barangayId], references: [id])
-  approvedBy     String?
-  remarks        String?
-  photo          String?
-  status         Int?
-  verifiedBy     String?
+  id                      Int           @id @default(autoincrement())
+  createdAt               DateTime      @default(now())
+  dateOfIncident          DateTime?
+  timeOfIncident          String?
+  dateReported            DateTime?     @default(now())
+  municipalityId          Int?
+  Municipality            Municipality? @relation(fields: [municipalityId], references: [id])
+  barangayId              Int?
+  Barangay                Barangay?     @relation(fields: [barangayId], references: [id])
+  approvedBy              String?
+  remarks                 String?
+  photo                   String?
+  status                  Int?
+  verifiedBy              String?
+  longitude               Float?
+  latitude                Float?
+  builtUpAreas            String?
+  displaced               Int?
+  injured                 Int?
+  dead                    Int?
+  triggerMechanism        String?
+  category                Int?
+  landslideSusceptibility Int?
+  floodingSusceptibility  Int?
+  actionsTaken            Int?
 }
 
 model User {
@@ -111,4 +122,19 @@ model Device {
   id                Int      @id @default(autoincrement())
   deviceName        String
   lastFetchDateTime DateTime @default(now())
+}
+
+model AppNotification {
+  id          Int       @id @default(autoincrement())
+  body        String
+  sender      String
+  dateTime    DateTime  @default(now())
+  recipientId Int
+  Recipient   Recipient @relation(fields: [recipientId], references: [id])
+}
+
+model Recipient {
+  id            Int               @id @default(autoincrement())
+  contactNumber String            @unique
+  notifications AppNotification[]
 }
