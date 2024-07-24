@@ -7,6 +7,7 @@ import { LandslideReportsModule } from './landslide-reports/landslide-reports.mo
 import { AuthModule } from './auth/auth.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { NotificationsModule } from './notifications/notifications.module';
+import { ThresholdsModule } from './thresholds/thresholds.module';
 
 @Module({
   imports: [
@@ -16,7 +17,8 @@ import { NotificationsModule } from './notifications/notifications.module';
     LandslideReportsModule,
     AuthModule,
     NotificationsModule,
-    ScheduleModule.forRoot()
+    ScheduleModule.forRoot(),
+    ThresholdsModule
   ],
 })
 export class AppModule { }

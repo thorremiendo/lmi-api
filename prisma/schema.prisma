@@ -138,3 +138,16 @@ model Recipient {
   contactNumber String            @unique
   notifications AppNotification[]
 }
+
+model RainFallThreshold {
+  id                Int @id @default(autoincrement())
+  observationPeriod Int @unique
+  ra0Min            Int
+  ra0Max            Int
+  ra1Min            Int
+  ra1Max            Int
+  ra2Min            Int
+  ra2Max            Int
+  ra3Min            Int
+  ra3Max            Int
+}

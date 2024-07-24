@@ -321,6 +321,59 @@ async function main() {
             })
         }
     }
+
+    const thresholds = [
+        {
+            observationPeriod: 1,
+            ra0Min: 0,
+            ra0Max: 202,
+            ra1Min: 203,
+            ra1Max: 404,
+            ra2Min: 405,
+            ra2Max: 606,
+            ra3Min: 607,
+            ra3Max: 9999, // Assuming no upper limit
+        },
+        {
+            observationPeriod: 2,
+            ra0Min: 0,
+            ra0Max: 247,
+            ra1Min: 248,
+            ra1Max: 494,
+            ra2Min: 495,
+            ra2Max: 742,
+            ra3Min: 743,
+            ra3Max: 9999, // Assuming no upper limit
+        },
+        {
+            observationPeriod: 3,
+            ra0Min: 0,
+            ra0Max: 278,
+            ra1Min: 279,
+            ra1Max: 556,
+            ra2Min: 557,
+            ra2Max: 834,
+            ra3Min: 835,
+            ra3Max: 9999, // Assuming no upper limit
+        },
+        {
+            observationPeriod: 4,
+            ra0Min: 0,
+            ra0Max: 323,
+            ra1Min: 324,
+            ra1Max: 645,
+            ra2Min: 646,
+            ra2Max: 968,
+            ra3Min: 969,
+            ra3Max: 9999, // Assuming no upper limit
+        },
+    ];
+
+    for (const threshold of thresholds) {
+        await prisma.rainFallThreshold.create({
+            data: threshold,
+        });
+    }
 }
 
 // execute the main function
