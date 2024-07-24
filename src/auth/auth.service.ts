@@ -20,6 +20,7 @@ export class AuthService {
         firstName: string;
         lastName: string;
         barangay: number;
+        municipality: number;
         role: Role;
     }) {
         const hashedPassword = await bcrypt.hash(body.password, 10);
@@ -32,7 +33,7 @@ export class AuthService {
                 firstName: body.firstName,
                 lastName: body.lastName,
                 barangayId: body.barangay,
-                municipalityId: null,
+                municipalityId: body.municipality,
                 role: body.role
             },
         });

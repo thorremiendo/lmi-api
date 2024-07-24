@@ -8,6 +8,7 @@ import { AuthModule } from './auth/auth.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { NotificationsModule } from './notifications/notifications.module';
 import { ThresholdsModule } from './thresholds/thresholds.module';
+import { ContactsModule } from './contacts/contacts.module';
 
 @Module({
   imports: [
@@ -18,7 +19,8 @@ import { ThresholdsModule } from './thresholds/thresholds.module';
     AuthModule,
     NotificationsModule,
     ScheduleModule.forRoot(),
-    ThresholdsModule
+    ThresholdsModule,
+    ContactsModule
   ],
 })
 export class AppModule { }

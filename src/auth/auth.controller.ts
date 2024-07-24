@@ -30,6 +30,7 @@ export class AuthController {
         firstName: string;
         lastName: string;
         barangay: number;
+        municipality: number;
         role: Role
     }) {
         return this.authService.register(body);

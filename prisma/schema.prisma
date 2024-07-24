@@ -36,6 +36,7 @@ model Municipality {
   barangays        Barangay[]
   landslideReports LandslideReport[]
   User             User[]
+  contacts         Contact[]
 }
 
 model Barangay {
@@ -45,6 +46,7 @@ model Barangay {
   Municipality     Municipality      @relation(fields: [municipalityId], references: [id])
   landslideReports LandslideReport[]
   User             User[]
+  contacts         Contact[]
 }
 
 model LandslideReport {
@@ -150,4 +152,15 @@ model RainFallThreshold {
   ra2Max            Int
   ra3Min            Int
   ra3Max            Int
+}
+
+model Contact {
+  id             Int          @id @default(autoincrement())
+  municipalityId Int
+  barangayId     Int
+  firstName      String
+  lastName       String
+  contactNumber  String
+  Municipality   Municipality @relation(fields: [municipalityId], references: [id])
+  Barangay       Barangay     @relation(fields: [barangayId], references: [id])
 }
