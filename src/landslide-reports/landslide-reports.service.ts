@@ -63,6 +63,19 @@ export class LandslideReportsService {
     });
   }
 
+  async findVerifiedReports(): Promise<LandslideReport[]> {
+    return this.prisma.landslideReport.findMany({
+      where: { status: 1 },
+      include: {
+        Municipality: true,
+        Barangay: true,
+      },
+      orderBy: {
+        id: 'asc',
+      },
+    });
+  }
+
   remove(id: number) {
     return `This action removes a #${id} landslideReport`;
   }

@@ -38,4 +38,10 @@ export class LandslideReportsController {
   remove(@Param('id') id: string) {
     return this.landslideReportsService.remove(+id);
   }
+
+  @Get('status/verified')
+  async findVerified(): Promise<ResponseDto<LandslideReport[]>> {
+    const data = await this.landslideReportsService.findVerifiedReports();
+    return new ResponseDto(true, data, 'Verified Landslide reports fetched successfully');
+  }
 }
