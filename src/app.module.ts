@@ -1,5 +1,6 @@
 /* eslint-disable prettier/prettier */
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { SensorsModule } from './sensors/sensors.module';
 import { MunicipalitiesModule } from './municipalities/municipalities.module';
 import { BarangaysModule } from './barangays/barangays.module';
@@ -12,6 +13,9 @@ import { ContactsModule } from './contacts/contacts.module';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
     SensorsModule,
     MunicipalitiesModule,
     BarangaysModule,

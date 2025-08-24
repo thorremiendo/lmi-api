@@ -6,16 +6,17 @@ import { PrismaClient } from '@prisma/client';
 import { JwtModule } from '@nestjs/jwt';
 import { LocalStrategry } from './strategies/local.strategy';
 import { JwtStrategy } from './strategies/jwt.strategy';
+import { AdminGuard } from './guards/admin.guard';
 
 @Module({
   imports: [
     JwtModule.register({
-      secret: 'lmis-secret',
+      secret: process.env.JWT_SECRET || 'lmis-secret',
       signOptions: { expiresIn: '1d' },
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, LocalStrategry, JwtStrategy,
+  providers: [AuthService, LocalStrategry, JwtStrategy, AdminGuard,
     {
       provide: 'PrismaClient',
       useValue: new PrismaClient(),

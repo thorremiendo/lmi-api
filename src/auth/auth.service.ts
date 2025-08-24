@@ -1,9 +1,12 @@
 /* eslint-disable prettier/prettier */
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { AuthPayloadDto } from './dto/auth.dto';
-import { PrismaClient, Role } from '@prisma/client';
+import { CreateUserDto, UpdateUserDto } from './dto/user-management.dto';
+import { PrismaClient, Role, User } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
+
+type UserResponse = Omit<User, 'password'>;
 
 @Injectable()
 export class AuthService {
@@ -58,5 +61,128 @@ export class AuthService {
             data: user,
             token: this.jwtService.sign(payload),
         };
+    }
+
+    async createUser(createUserDto: CreateUserDto): Promise<User> {
+        const existingUser = await this.prisma.user.findUnique({
+            where: { username: createUserDto.username },
+        });
+
+        if (existingUser) {
+            throw new ConflictException('Username already exists');
+        }
+
+        if (createUserDto.email) {
+            const existingEmail = await this.prisma.user.findUnique({
+                where: { email: createUserDto.email },
+            });
+
+            if (existingEmail) {
+                throw new ConflictException('Email already exists');
+            }
+        }
+
+        const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
+
+        return this.prisma.user.create({
+            data: {
+                ...createUserDto,
+                password: hashedPassword,
+            },
+        });
+    }
+
+    async findAllUsers(): Promise<UserResponse[]> {
+        return this.prisma.user.findMany({
+            select: {
+                id: true,
+                username: true,
+                email: true,
+                role: true,
+                firstName: true,
+                lastName: true,
+                contactNumber: true,
+                municipalityId: true,
+                barangayId: true,
+                createdAt: true,
+            },
+        });
+    }
+
+    async findUserById(id: number): Promise<UserResponse> {
+        const user = await this.prisma.user.findUnique({
+            where: { id },
+            select: {
+                id: true,
+                username: true,
+                email: true,
+                role: true,
+                firstName: true,
+                lastName: true,
+                contactNumber: true,
+                municipalityId: true,
+                barangayId: true,
+                createdAt: true,
+            },
+        });
+
+        if (!user) {
+            throw new NotFoundException('User not found');
+        }
+
+        return user;
+    }
+
+    async updateUser(id: number, updateUserDto: UpdateUserDto): Promise<UserResponse> {
+        const existingUser = await this.prisma.user.findUnique({
+            where: { id },
+        });
+
+        if (!existingUser) {
+            throw new NotFoundException('User not found');
+        }
+
+        if (updateUserDto.username) {
+            const usernameExists = await this.prisma.user.findUnique({
+                where: { 
+                    username: updateUserDto.username,
+                    NOT: { id }
+                },
+            });
+
+            if (usernameExists) {
+                throw new ConflictException('Username already exists');
+            }
+        }
+
+        if (updateUserDto.email) {
+            const emailExists = await this.prisma.user.findUnique({
+                where: { 
+                    email: updateUserDto.email,
+                    NOT: { id }
+                },
+            });
+
+            if (emailExists) {
+                throw new ConflictException('Email already exists');
+            }
+        }
+
+        return this.prisma.user.update({
+            where: { id },
+            data: updateUserDto,
+            select: {
+                id: true,
+                username: true,
+                email: true,
+                role: true,
+                firstName: true,
+                lastName: true,
+                contactNumber: true,
+                municipalityId: true,
+                barangayId: true,
+                createdAt: true,
+            },
+        });
     }
 }
