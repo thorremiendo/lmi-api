@@ -476,6 +476,9 @@ npm run build && npx prisma generate
 scp -i /Users/thorremiendo/Documents/calami-t.pem -r dist/ ec2-user@ec2-13-212-252-14.ap-southeast-1.compute.amazonaws.com:~/lmis-api/
 scp -i /Users/thorremiendo/Documents/calami-t.pem -r node_modules/@prisma/ ec2-user@ec2-13-212-252-14.ap-southeast-1.compute.amazonaws.com:~/lmis-api/node_modules/
 
+# Connect using your PEM key
+ssh -i /Users/thorremiendo/Documents/calami-t.pem ec2-user@ec2-13-212-252-14.ap-southeast-1.compute.amazonaws.com
+
 # On EC2:
 cd ~/lmis-api && npx prisma migrate deploy && pm2 restart nestjs-api
 
