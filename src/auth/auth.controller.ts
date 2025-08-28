@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { Body, Controller, Get, Post, Put, Param, Req, UseGuards, ParseIntPipe } from '@nestjs/common';
+import { Body, Controller, Get, Post, Put, Param, Req, UseGuards, ParseIntPipe, Delete } from '@nestjs/common';
 import { AuthPayloadDto } from './dto/auth.dto';
 import { CreateUserDto, UpdateUserDto } from './dto/user-management.dto';
 import { AuthService } from './auth.service';
@@ -93,5 +93,16 @@ export class AuthController {
         @Body() updateUserDto: UpdateUserDto
     ) {
         return await this.authService.updateUser(id, updateUserDto);
+    }
+
+    @ApiBearerAuth()
+    @Delete('users/:id')
+    @UseGuards(JwtAuthGuard, AdminGuard)
+    @ApiOperation({ summary: 'Delete user by ID (Admin only)' })
+    @ApiResponse({ status: 200, description: 'User deleted successfully' })
+    @ApiResponse({ status: 403, description: 'Forbidden - Admin access required' })
+    @ApiResponse({ status: 404, description: 'User not found' })
+    async deleteUser(@Param('id', ParseIntPipe) id: number) {
+        return await this.authService.deleteUser(id);
     }
 }

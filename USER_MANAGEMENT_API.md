@@ -240,6 +240,40 @@ curl -X PUT http://localhost:3000/api/auth/users/1 \
 
 ---
 
+### 5. Delete User
+Deletes a user from the system.
+
+**Endpoint**: `DELETE /users/{id}`
+
+**Path Parameters**:
+- `id`: User ID (integer)
+
+**Headers**:
+```
+Authorization: Bearer <jwt-token>
+```
+
+**Response (200 OK)**:
+```json
+{
+  "message": "User deleted successfully"
+}
+```
+
+**Error Responses**:
+- `400 Bad Request`: Invalid user ID
+- `401 Unauthorized`: Missing or invalid JWT token
+- `403 Forbidden`: User does not have Admin role
+- `404 Not Found`: User not found
+
+**Example cURL**:
+```bash
+curl -X DELETE http://localhost:3000/api/auth/users/1 \
+  -H "Authorization: Bearer <jwt-token>"
+```
+
+---
+
 ## Data Models
 
 ### User Role Enum
@@ -366,6 +400,11 @@ export class UserManagementService {
   updateUser(id: number, userData: any): Observable<any> {
     return this.http.put(`${this.baseUrl}/users/${id}`, userData, { headers: this.headers });
   }
+
+  // Delete User
+  deleteUser(id: number): Observable<any> {
+    return this.http.delete(`${this.baseUrl}/users/${id}`, { headers: this.headers });
+  }
 }
 ```
 
@@ -399,6 +438,7 @@ import { UserManagementService } from '../services/user-management.service';
         <p>Username: {{ user.username }}</p>
         <p>Role: {{ user.role }}</p>
         <button (click)="editUser(user)">Edit</button>
+        <button (click)="deleteUser(user.id)" class="delete-btn">Delete</button>
       </div>
     </div>
   `
@@ -432,6 +472,17 @@ export class UserManagementComponent implements OnInit {
 
   editUser(user: any) {
     // Implement edit functionality
+  }
+
+  deleteUser(id: number) {
+    if (confirm('Are you sure you want to delete this user?')) {
+      this.userService.deleteUser(id).subscribe(
+        () => {
+          this.users = this.users.filter(user => user.id !== id);
+        },
+        error => console.error('Error deleting user:', error)
+      );
+    }
   }
 }
 ```

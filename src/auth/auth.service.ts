@@ -144,7 +144,7 @@ export class AuthService {
 
         if (updateUserDto.username) {
             const usernameExists = await this.prisma.user.findUnique({
-                where: { 
+                where: {
                     username: updateUserDto.username,
                     NOT: { id }
                 },
@@ -157,7 +157,7 @@ export class AuthService {
 
         if (updateUserDto.email) {
             const emailExists = await this.prisma.user.findUnique({
-                where: { 
+                where: {
                     email: updateUserDto.email,
                     NOT: { id }
                 },
@@ -183,6 +183,20 @@ export class AuthService {
                 barangayId: true,
                 createdAt: true,
             },
+        });
+    }
+
+    async deleteUser(id: number): Promise<void> {
+        const existingUser = await this.prisma.user.findUnique({
+            where: { id },
+        });
+
+        if (!existingUser) {
+            throw new NotFoundException('User not found');
+        }
+
+        await this.prisma.user.delete({
+            where: { id },
         });
     }
 }
